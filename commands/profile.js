@@ -33,7 +33,7 @@ module.exports = {
     const embed = new Discord.MessageEmbed()
     .setAuthor("===================")
     .setTitle(`Profile of ${interaction.user.username}`)
-    .setDescription(`Endorsements: **${profileData.endorsments}**\nCommunity Points: **${profileData.communityPoints}**\nChallenge Points: **${profileData.challangePoints}**\n${profileData.eventTrophies}`)
+    .setDescription(`Endorsements: **${profileData.endorsments}**\nCommunity Points: **${profileData.communityPoints}**\nChallenge Points: **${profileData.challangePoints}**`)
     .setColor("BLUE")
     .setFooter(`${interaction.member?.user.username}`)
     .setTimestamp(date)
