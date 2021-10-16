@@ -3,6 +3,7 @@ const WOKCommands = require('wokcommands')
 const path = require('path')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
+const fs = require('fs')
 dotenv.config()
 const { Intents } = DiscordJS
 
@@ -38,7 +39,8 @@ client.on('ready', () => {
 
   console.log('bot is ready')
 
-
+  
+  
 })
 
 client.on('guildMemberAdd', async (member) =>{
