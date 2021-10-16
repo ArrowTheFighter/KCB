@@ -27,6 +27,7 @@ module.exports = {
         const passwordsList = fs.readFileSync('./passwords/passwords.txt', {encoding:'utf8', flag:'r'} )
         const passwordsArray = passwordsList.split('\r\n')
         let pos = 0
+        console.log(passwordsArray)
         passwordsArray.forEach(code => {
             //console.log(code + ' ' + passcode)
             if(code === passcode){
