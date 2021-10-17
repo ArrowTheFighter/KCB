@@ -25,7 +25,7 @@ mongoose
     console.log('connected to the database');
     })
     .catch((error) => { 
-    console.log(err);
+    console.log(error);
     })
 
 client.on('ready', () => {

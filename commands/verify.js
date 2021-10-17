@@ -1,6 +1,7 @@
 const profileModel = require('../models/profileSchema')
 const Discord = require('discord.js')
 const fs = require('fs')
+const { join } = require('path')
 require('dotenv').config()
 
 module.exports = {
@@ -27,19 +28,30 @@ module.exports = {
         const passwordsList = fs.readFileSync('./passwords/passwords.txt', {encoding:'utf8', flag:'r'} )
         
         const passwordsArray = passwordsList.split('\n')
-        
-        console.log(passwordsArray)
+
         let pos = 0
         passwordsArray.forEach(code => {
             //console.log(code + ' ' + passcode)
             if(code === passcode){
                 replyMessage = 'correct code'
-                passwordsArray.splice(pos, 1)
-                console.log(passwordsArray)
+                fs.appendFile('./passwords/usedpasswords.txt',code + ` ${interaction.user.username} id = ${interaction.user.id}\n`, (error) =>{
+                    if (error) console.log(err.message)
+                    else console.log(`removed ${code}`)
+                })
+                
+                passwordsList.split('\r\n').splice(pos,1,)
+                //console.log(passwordsList + ' old')
+                const arrayPasswords = passwordsList.split('\n')
+                const updatedPasswords = arrayPasswords.splice(pos,1)
+                const joinedPasswords = arrayPasswords.join('\n')
+
+                fs.writeFileSync('./passwords/passwords.txt', joinedPasswords)
+                //passwordsArray.splice(pos, 1)
+                //console.log(oldPasswords)
                 
             }
             pos += 1
-            
+            //console.log(code + ' ' + passcode)
          });
          
     return interaction.reply({content: replyMessage, ephemeral: true})
