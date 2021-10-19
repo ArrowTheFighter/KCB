@@ -28,20 +28,25 @@ mongoose
     console.log(error);
     })
 
-client.on('ready', () => {
-  new WOKCommands(client, {
-    // The name of the local folder for your command files
-    commandsDir: path.join(__dirname, 'commands'),
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles) {
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
+//client.on('ready', () => {
+//   new WOKCommands(client, {
+//     // The name of the local folder for your command files
+//     commandsDir: path.join(__dirname, 'commands'),
     
-    testServers: '890788807694225460',
-  })
-  
-
-  console.log('bot is ready')
-
-  
-  
-})
+//     testServers: '890788807694225460',
+//   })
+//   console.log('bot is ready')
+//})
 
 client.on('guildMemberAdd', async (member) =>{
     const profileModel = require('./models/profileSchema');
@@ -56,8 +61,6 @@ client.on('guildMemberAdd', async (member) =>{
     console.log('user joined')
 })
 
-client.on('messageCreate', (interaction) =>{
 
-})
 
 client.login(process.env.TOKEN)
