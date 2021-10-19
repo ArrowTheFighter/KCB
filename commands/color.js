@@ -37,9 +37,26 @@ module.exports = {
         const { guild } = interaction
         const member = guild?.members.cache.get(interaction.user.id)
         const roles = member?.roles.cache.map(role => role)
+        let rolesArray = ['895500910116098108','895498268363092019','895498331764179015','895490104678821929','895490104678821929','895490060047253555']
+        let curColorRole
+        roles.every(role => {
+            rolesArray.every(color =>{
+                
+                if(color === role.id){
+                    curColorRole = role.id 
+                    console.log('true')
+                    return false
+                }
+                return true
+            })
+            return true
+        })
+
+        rolesArray.length=(rolesArray.indexOf(curColorRole) + 1)
+        console.log(rolesArray.length)
         let roleList = []
-        roles.forEach(role => {
-            switch(role.id){
+        rolesArray.forEach(role => {
+            switch(role){
                 case '895500910116098108':
                     // Villager Role
                     roleList.push({
@@ -108,7 +125,7 @@ module.exports = {
         .setDescription(`Choose a new color`)
         .setColor("BLUE")
         
-        if(roleList.length === 0){
+        if(roleList.length < 1){
             return interaction.reply('You need a colored role before you can use this command')
         }else{
             const row = new Discord.MessageActionRow()
