@@ -11,7 +11,7 @@ module.exports  =  {
                 
                 const member = guild?.members.cache.get(interaction.user.id)
                 const roles = member?.roles.cache.map(role => role)
-                const ColorRoles = ["898962477377798204", '898962420779868220', '898962331143405568','898962581467828274','898962762640814120','898962867976536094']
+                const ColorRoles = ["898962477377798204", '898962420779868220', '898962331143405568','898962581467828274','898962762640814120','898962867976536094','900949035177889813']
 
                 roles?.forEach(role =>{
                     ColorRoles.forEach(string =>{
@@ -77,6 +77,16 @@ module.exports  =  {
                         member?.roles.add('898962867976536094')
                         interaction.reply({
                             content: `Your color is now light green`,
+                            ephemeral: true
+                        })
+                        
+                
+                    break;
+                case 'peach':
+                        //Peach
+                        member?.roles.add('900949035177889813')
+                        interaction.reply({
+                            content: `Your color is now peach`,
                             ephemeral: true
                         })
                         

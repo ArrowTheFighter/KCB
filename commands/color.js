@@ -54,7 +54,20 @@ module.exports = {
 
         rolesArray.length=(rolesArray.indexOf(curColorRole) + 1)
         console.log(rolesArray.length)
+        let otherRoles = ['900947603154436127']
+        roles.forEach(role =>{
+            otherRoles.forEach(other =>{
+                if (role.id === other){
+                    rolesArray.push(other)
+                }
+            })
+        })
+        
+        
         let roleList = []
+
+
+
         rolesArray.forEach(role => {
             switch(role){
                 case '895500910116098108':
@@ -115,6 +128,16 @@ module.exports = {
                         description: 'Switch your color to dark pink',
                         emoji: '899855566770429953',
                         order: 6
+                    })
+                    break;
+                case '900947603154436127':
+                    //Competition Winnder Role
+                    roleList.push({
+                        label: 'Peach',
+                        value: 'peach',
+                        description: 'Switch your color to peach',
+                        emoji: '900950426390777887',
+                        order: 7
                     })
                     break;
             }
