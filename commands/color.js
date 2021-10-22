@@ -126,7 +126,7 @@ module.exports = {
         .setColor("BLUE")
         
         if(roleList.length < 1){
-            return interaction.reply('You need a colored role before you can use this command')
+            return interaction.reply({content: 'You need a colored role before you can use this command', ephemeral: true})
         }else{
             const row = new Discord.MessageActionRow()
             .addComponents(
