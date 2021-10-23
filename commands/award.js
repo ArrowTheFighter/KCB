@@ -27,7 +27,7 @@ module.exports = {
         const OS = process.platform
         if(OS === 'win32'){
         configArray = configString.split('\r\n')
-        }else if(os === 'linux'){
+        }else if(OS === 'linux'){
             configArray = configString.split('\n')
         }
         let hasRole = false
