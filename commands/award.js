@@ -24,7 +24,12 @@ module.exports = {
         const member = guild?.members.cache.get(interaction.user.id)
         const userRoles = member?.roles.cache.map(role => role)
         const configString = fs.readFileSync('./configs/awardConfig.txt', {encoding:'utf8', flag:'r'})
-        configArray = configString.split('\n')
+        const OS = process.platform
+        if(OS === 'win32'){
+        configArray = configString.split('\r\n')
+        }else if(os === 'linux'){
+            configArray = configString.split('\n')
+        }
         let hasRole = false
         userRoles.forEach(role => {
             configArray.forEach(roleID =>{
