@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const profileSchema = new mongoose.Schema({
     userID: { type: String, require: true, unique: true},
     serverID: { type: String, requre: true},
-    endorsments: {type: Number, default: 0},
-    communityPoints: {type: Number},
-    challangePoints: {type: Number},
+    communityAwards: {type: Number, default: 0},
+    communityPoints: {type: Number, default: 0},
+    challangePoints: {type: Number,default: 0},
     eventTrophies: {type: Number}
 });
 

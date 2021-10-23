@@ -37,7 +37,7 @@ module.exports = {
         const { guild } = interaction
         const member = guild?.members.cache.get(interaction.user.id)
         const roles = member?.roles.cache.map(role => role)
-        let rolesArray = ['895500910116098108','895498268363092019','895498331764179015','895490104678821929','895490104678821929','895490060047253555']
+        let rolesArray = ['895500910116098108','895498268363092019','895498331764179015','895490104678821929','895490014388047954','895490060047253555']
         let curColorRole
         roles.every(role => {
             rolesArray.every(color =>{
