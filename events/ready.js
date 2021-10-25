@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = {
     name: 'ready',
     once: true,
-    execute(client) {
+    execute (client){
         new WOKCommands(client, {
             // The name of the local folder for your command files
             commandsDir: path.join(__dirname, '../commands'),

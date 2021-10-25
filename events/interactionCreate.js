@@ -1,11 +1,11 @@
-const DiscordJS = require('discord.js')
+const DiscordJS = require('discord.js');
+const profileModel = require('../models/profileSchema')
 
-module.exports  =  {
+module.exports = {
     name: 'interactionCreate',
     once: false,
-    execute(interaction) {
+    async execute (interaction, client){
         if(interaction.isSelectMenu()){
-            console.log(interaction.values[0])
             const { guild } = interaction
             if (interaction.customId === 'ColorMenu'){
                 
@@ -94,7 +94,33 @@ module.exports  =  {
                     break;
                 return
                 }
+            }else if (interaction.customId === 'TitleRemoveMenu'){
+                const splitValue = interaction.values[0].split(',')
+                console.log(splitValue)
+
+                profileData = await profileModel.findOne({userID: splitValue[1] });
+
+                const oldTitles = profileData.titles
+                newTitles = oldTitles.filter(e => e !== splitValue[0])
+                
+                if (newTitles.legnth <= 0){
+                    newTitles = []
+                }
+                await profileModel.findOneAndUpdate({
+                    userID: splitValue[1],
+                },{
+                    $set:{
+                        titles: newTitles,
+                    }
+                })
+                const user = interaction.client.users.cache.find(user => user.id === splitValue[1])
+                const embed = new DiscordJS.MessageEmbed()
+                .setAuthor(`${interaction.member.user.username} has removed the ${splitValue[0]} title from ${user.username}`)
+                .setColor("BLUE")
+
+                interaction.update({embeds: [embed], components: []})
             }
+
         
     }
 }}
