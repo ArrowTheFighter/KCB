@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
     userName: {type: String},
     serverID: { type: String, requre: true},
     communityAwards: {type: Number, default: 0},
+    CACooldown: {type: String},
     eventTrophies: {type: Number, default: 0},
     challangeTrophies: {type: Number, default: 0},
     titles: [{type: String}]
