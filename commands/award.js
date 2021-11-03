@@ -1,5 +1,5 @@
 const profileModel = require('../models/profileSchema')
-const MyFuntions = require('../myFunctions')
+const myFuntions = require('../myFunctions')
 const Discord = require('discord.js')
 require('dotenv').config()
 const fs = require('fs')
@@ -20,24 +20,12 @@ module.exports = {
         }
     ],
     
-    callback: async ({ interaction, options }) => {
+    callback: async ({ interaction }) => {
         const userToAward = interaction.options.getUser('usertoaward')
-        const { guild } = interaction
-        const member = guild?.members.cache.get(interaction.user.id)
-        const userRoles = member?.roles.cache.map(role => role)
         const configString = fs.readFileSync('./configs/awardConfig.txt', {encoding:'utf8', flag:'r'})
-        const OS = process.platform
         const cooldownTime = 86400000
-        configArray = myFunctions.ConfigToArrayOS(configString)
-        let hasRole = false
-        userRoles.forEach(role => {
-            configArray.forEach(roleID =>{
-                
-                if (role.id === roleID){
-                    hasRole = true
-                }
-            })
-        });
+        let hasRole = myFuntions.CheckConfigRoles(interaction, configString)
+        
         if(hasRole === false){
             return interaction.reply({content: "You do not have the required role to use this command", ephemeral: true})
         }else{

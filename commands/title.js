@@ -1,5 +1,7 @@
 const profileModel = require('../models/profileSchema')
 const titlesModel = require('../models/titlesSchema')
+const myFuntions = require('../myFunctions')
+const fs = require('fs')
 const Discord = require('discord.js')
 require('dotenv').config()
 
@@ -95,6 +97,11 @@ module.exports = {
     callback: async ({ interaction }) => {
         const userVar = interaction.options.getUser('user')
         let action = interaction.options.getSubcommand()
+        const configString = fs.readFileSync('./configs/titleConfig.txt', {encoding:'utf8', flag:'r'})
+        let hasPermission = myFuntions.CheckConfigRoles(interaction, configString)
+        if(!hasPermission){
+        return interaction.reply({content: `You don't have permission to use this command`})
+        }
 
         const title = interaction.options.getString('title')
         let embed

@@ -1,6 +1,9 @@
 const DiscordJS = require('discord.js');
 const profileModel = require('../models/profileSchema')
 const titlesModel = require('../models/titlesSchema')
+const myFuntions = require('../myFunctions')
+const fs = require('fs');
+const myFunctions = require('../myFunctions');
 
 module.exports = {
     name: 'interactionCreate',
@@ -9,6 +12,8 @@ module.exports = {
         if(interaction.isSelectMenu()){
             const { guild } = interaction
             let embed
+            let row
+            let roleName
             switch (interaction.customId){
             case 'ColorMenu':
                     
@@ -144,7 +149,6 @@ module.exports = {
                 break;
                 case 'TitleGiveMenu':
                     splitValue = interaction.values[0].split(',')
-                    console.log(splitValue)
 
                     profileData = await profileModel.findOne({userID: splitValue[1] });
 
@@ -161,6 +165,119 @@ module.exports = {
                     .setColor("BLUE")
 
                     interaction.update({embeds: [embed], components: []})
+                break;
+                case 'ConfigEditMenu':
+                    
+                    let ActionList = [
+                    {
+                        label: 'Add',
+                        value: `add,${interaction.values[0]}`,
+                        description: `Add a role to this config`,
+                    },
+                    {
+                        label: 'Remove',
+                        value: `remove,${interaction.values[0]}`,
+                        description: `Remove a role from this config`,
+                    },
+                    {
+                        label: 'List',
+                        value: `list,${interaction.values[0]}`,
+                        description: `List the roles in this config`,
+                    }
+                ]
+                
+
+                embed = new DiscordJS.MessageEmbed()
+                .setDescription(`Choose an action`)
+                .setColor("RED")
+                
+                row = new DiscordJS.MessageActionRow()
+                .addComponents(
+                new DiscordJS.MessageSelectMenu()
+                    .setCustomId('ConfigActionEditMenu')
+                    .setPlaceholder('Choose Action')
+                    .setMaxValues(1)
+                    .addOptions(ActionList)
+                )
+                interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                break;
+                case 'ConfigActionEditMenu':
+                    splitValue = interaction.values[0].split(',')
+                    switch(splitValue[0]){
+                        case 'remove':
+                            fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
+                            fileArray = myFunctions.ConfigToArrayOS(fileString)
+
+                            let RoleList = []
+                            fileArray.forEach(role =>{
+                                roleName = interaction.guild.roles.cache.get(role).name
+                                RoleList.push({
+                                    label: roleName,
+                                    value: role,
+                                    description: `Remove the ${roleName} role`,
+                                })
+                            })  
+                            embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`Choose a role to remove from the config file`)
+                            .setColor("YELLOW")
+                            
+                            row = new DiscordJS.MessageActionRow()
+                            .addComponents(
+                            new DiscordJS.MessageSelectMenu()
+                                .setCustomId('ConfigActionEditMenu')
+                                .setPlaceholder('Choose a role')
+                                .setMaxValues(1)
+                                .addOptions(RoleList)
+                            )
+                            interaction.update({embeds: [embed], components: [row], ephemeral: true})
+
+                        break;
+                        case 'add':
+                            const serverRoles = interaction.guild.roles.cache.map(role => role)
+                            serverRoles.splice(0,1)
+
+                            let ServerRoleList = []
+                            serverRoles.forEach(role =>{
+                                
+                                ServerRoleList.push({
+                                    label: role.name,
+                                    value: role.id,
+                                    description: `Add the ${role.name} role`,
+                                })
+                            })  
+                            embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`Choose a role to add to the config file`)
+                            .setColor("YELLOW")
+                            
+                            row = new DiscordJS.MessageActionRow()
+                            .addComponents(
+                            new DiscordJS.MessageSelectMenu()
+                                .setCustomId('ConfigActionEditMenu')
+                                .setPlaceholder('Choose a role')
+                                .setMaxValues(1)
+                                .addOptions(ServerRoleList)
+                            )
+                            interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                        break;
+                        case 'list':
+                            fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
+                            fileArray = myFunctions.ConfigToArrayOS(fileString)
+                            roleNames = []
+                            fileArray.forEach(roleID =>{
+                                roleName = interaction.guild.roles.cache.get(roleID).name
+                                roleNames.push(roleName)
+                            })
+                            roleNamesString = roleNames.join('\n')
+                            embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`The ${splitValue[1]} file contains the following roles \n\n${roleNamesString}`)
+                            .setColor("YELLOW")
+                            interaction.update({embeds: [embed], components: [], ephemeral: true})
+                        break;
+                    }
+                    
+                    
+
+                
                 break;
         }
         
