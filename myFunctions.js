@@ -8,14 +8,17 @@ module.exports = {
             }
     },
 
-    CheckConfigRoles: function (Inter, ConfigStr){
+    CheckConfigRoles: function (Inter, ConfigArr){
         const { guild } = Inter
         const member = guild?.members.cache.get(Inter.user.id)
         const userRoles = member?.roles.cache.map(role => role)
-        configArray = this.ConfigToArrayOS(ConfigStr)
         let hasRole = false
+        if(ConfigArr.length === 0){
+            hasRole = true
+            return hasRole
+        }
         userRoles.forEach(role => {
-            configArray.forEach(roleID =>{
+            ConfigArr.forEach(roleID =>{
                 
                 if (role.id === roleID){
                     hasRole = true

@@ -97,8 +97,10 @@ module.exports = {
     callback: async ({ interaction }) => {
         const userVar = interaction.options.getUser('user')
         let action = interaction.options.getSubcommand()
-        const configString = fs.readFileSync('./configs/titleConfig.txt', {encoding:'utf8', flag:'r'})
-        let hasPermission = myFuntions.CheckConfigRoles(interaction, configString)
+        const configJson = fs.readFileSync('./configs/titleConfig.txt', {encoding:'utf8', flag:'r'})
+        const configArray = JSON.parse(configJson)
+        let hasPermission = myFuntions.CheckConfigRoles(interaction, configArray)
+        
         if(!hasPermission){
         return interaction.reply({content: `You don't have permission to use this command`})
         }

@@ -147,6 +147,8 @@ module.exports = {
 
                     interaction.update({embeds: [embed], components: []})
                 break;
+
+
                 case 'TitleGiveMenu':
                     splitValue = interaction.values[0].split(',')
 
@@ -166,6 +168,8 @@ module.exports = {
 
                     interaction.update({embeds: [embed], components: []})
                 break;
+
+
                 case 'ConfigEditMenu':
                     
                     let ActionList = [
@@ -201,19 +205,21 @@ module.exports = {
                 )
                 interaction.update({embeds: [embed], components: [row], ephemeral: true})
                 break;
+
+
                 case 'ConfigActionEditMenu':
                     splitValue = interaction.values[0].split(',')
                     switch(splitValue[0]){
                         case 'remove':
                             fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
-                            fileArray = myFunctions.ConfigToArrayOS(fileString)
+                            fileArray = JSON.parse(fileString)
 
                             let RoleList = []
                             fileArray.forEach(role =>{
                                 roleName = interaction.guild.roles.cache.get(role).name
                                 RoleList.push({
                                     label: roleName,
-                                    value: role,
+                                    value: `${role}-${splitValue[1]}`,
                                     description: `Remove the ${roleName} role`,
                                 })
                             })  
@@ -224,7 +230,7 @@ module.exports = {
                             row = new DiscordJS.MessageActionRow()
                             .addComponents(
                             new DiscordJS.MessageSelectMenu()
-                                .setCustomId('ConfigActionEditMenu')
+                                .setCustomId('ConfigRemoveMenu')
                                 .setPlaceholder('Choose a role')
                                 .setMaxValues(1)
                                 .addOptions(RoleList)
@@ -232,6 +238,7 @@ module.exports = {
                             interaction.update({embeds: [embed], components: [row], ephemeral: true})
 
                         break;
+
                         case 'add':
                             const serverRoles = interaction.guild.roles.cache.map(role => role)
                             serverRoles.splice(0,1)
@@ -241,7 +248,7 @@ module.exports = {
                                 
                                 ServerRoleList.push({
                                     label: role.name,
-                                    value: role.id,
+                                    value: `${role.id}-${splitValue[1]}`,
                                     description: `Add the ${role.name} role`,
                                 })
                             })  
@@ -252,19 +259,28 @@ module.exports = {
                             row = new DiscordJS.MessageActionRow()
                             .addComponents(
                             new DiscordJS.MessageSelectMenu()
-                                .setCustomId('ConfigActionEditMenu')
+                                .setCustomId('ConfigAddMenu')
                                 .setPlaceholder('Choose a role')
                                 .setMaxValues(1)
                                 .addOptions(ServerRoleList)
                             )
                             interaction.update({embeds: [embed], components: [row], ephemeral: true})
                         break;
+
                         case 'list':
                             fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
-                            fileArray = myFunctions.ConfigToArrayOS(fileString)
+                            fileArray = JSON.parse(fileString)
+                            console.log(fileArray.length)
+                            if (fileArray.length === 0){
+                                embed = new DiscordJS.MessageEmbed()
+                                    .setDescription(`The ${splitValue[1]} file contains no roles`)
+                                    .setColor("YELLOW")
+                                return interaction.update({embeds: [embed], components: [], ephemeral: true})
+                            }else{
                             roleNames = []
                             fileArray.forEach(roleID =>{
                                 roleName = interaction.guild.roles.cache.get(roleID).name
+                                
                                 roleNames.push(roleName)
                             })
                             roleNamesString = roleNames.join('\n')
@@ -272,12 +288,61 @@ module.exports = {
                             .setDescription(`The ${splitValue[1]} file contains the following roles \n\n${roleNamesString}`)
                             .setColor("YELLOW")
                             interaction.update({embeds: [embed], components: [], ephemeral: true})
+                        }
                         break;
                     }
-                    
-                    
+                break;
 
-                
+
+                case 'ConfigRemoveMenu':
+                    splitValue = interaction.values[0].split('-')
+                    fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
+                    fileArray = JSON.parse(fileString)
+                    let success = false
+                    for (let i = 0; i < fileArray.length; i++){
+                        if(fileArray[i] === splitValue[0]){
+                            fileArray.splice(i, 1)
+                            success = true
+                            break;
+                        }
+                    }
+                    if(success){
+                        fileJson = JSON.stringify(fileArray)
+                        fs.writeFileSync(`./configs/${splitValue[1]}`, fileJson)
+                        console.log(`wrote file ${splitValue[1]}`)
+
+                        roleName = interaction.guild.roles.cache.get(splitValue[0]).name
+                        embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`The ${roleName} role has been removed from the ${splitValue[1]} file`)
+                            .setColor("GREEN")
+                            interaction.update({embeds: [embed], components: [], ephemeral: true})
+                    } else{
+                        embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`Something went wrong. Please contact the bot developer`)
+                            .setColor("RED")
+                        interaction.update({embeds: [embed], components: [], ephemeral: true})
+                    }
+                break;
+
+
+                case 'ConfigAddMenu':
+                    splitValue = interaction.values[0].split('-')
+                    fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
+                    fileArray = JSON.parse(fileString)
+
+                    fileArray.push(splitValue[0])
+                    console.log(fileArray)
+
+                    fileJson = JSON.stringify(fileArray)
+                    fs.writeFileSync(`./configs/${splitValue[1]}`, fileJson)
+                    console.log(`wrote file ${splitValue[1]}`)
+
+
+                    roleName = interaction.guild.roles.cache.get(splitValue[0]).name
+                    embed = new DiscordJS.MessageEmbed()
+                            .setDescription(`The ${roleName} role has been added to the ${splitValue[1]} file`)
+                            .setColor("GREEN")
+                            interaction.update({embeds: [embed], components: [], ephemeral: true})
                 break;
         }
         
