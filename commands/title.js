@@ -100,7 +100,7 @@ module.exports = {
         const configJson = fs.readFileSync('./configs/titleConfig.txt', {encoding:'utf8', flag:'r'})
         const configArray = JSON.parse(configJson)
         let hasPermission = myFuntions.CheckConfigRoles(interaction, configArray)
-        
+
         if(!hasPermission){
         return interaction.reply({content: `You don't have permission to use this command`})
         }
@@ -148,7 +148,7 @@ module.exports = {
                             label: title,
                             value: newValue,
                             description: `Give the ${title} title to ${userVar.username}`,
-                            emoji: ':x:',
+                            emoji: '✅',
                         })
                 });
                 const row = new Discord.MessageActionRow()
@@ -162,18 +162,9 @@ module.exports = {
                 embed = new Discord.MessageEmbed()
                 .setDescription(`Choose a title to delete`)
                 .setColor("BLUE")
-                return interaction.reply({embeds: [embed], components: [row]})
+                return interaction.reply({embeds: [embed], components: [row], ephemeral: true})
                 }
-                // await profileModel.findOneAndUpdate({
-                //         userID: userVar.id,
-                //     },{
-                //         $push:{
-                //             titles: title,
-                //         }
-                //     })
-                // embed = new Discord.MessageEmbed()
-                // .setAuthor(`${interaction.member.user.username} has given ${userVar.username} the title ${title}`)
-                // .setColor("BLUE")
+                
 
                 return embed
                 break;
@@ -207,7 +198,7 @@ module.exports = {
                         label: title,
                         value: newValue,
                         description: `Remove the ${title} title from this user`,
-                        emoji: ':x:',
+                        emoji: '❌',
                     })
                 });
                 const row = new Discord.MessageActionRow()
@@ -302,7 +293,7 @@ module.exports = {
                                 label: title,
                                 value: title,
                                 description: `Remove the ${title} title from the database`,
-                                emoji: ':x:',
+                                emoji: '❌',
                             })
                     });
                     const row = new Discord.MessageActionRow()
@@ -316,7 +307,7 @@ module.exports = {
                     embed = new Discord.MessageEmbed()
                     .setDescription(`Choose a title to delete`)
                     .setColor("BLUE")
-                    return interaction.reply({embeds: [embed], components: [row]})
+                    return interaction.reply({embeds: [embed], components: [row], ephemeral: true})
                     }
                     
                 break;
