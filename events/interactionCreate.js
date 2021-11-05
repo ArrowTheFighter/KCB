@@ -1,4 +1,4 @@
-const DiscordJS = require('discord.js');
+const Discord = require('discord.js');
 const profileModel = require('../models/profileSchema')
 const titlesModel = require('../models/titlesSchema')
 const myFuntions = require('../myFunctions')
@@ -9,10 +9,11 @@ module.exports = {
     name: 'interactionCreate',
     once: false,
     async execute (interaction, client){
-        if(interaction.isSelectMenu()){
+        if(interaction.isSelectMenu() || interaction.isButton()){
             const { guild } = interaction
             let embed
             let row
+            let buttonRow
             let roleName
             switch (interaction.customId){
             case 'ColorMenu':
@@ -105,7 +106,6 @@ module.exports = {
                     break;
                 case 'TitleRemoveMenu':
                     splitValue = interaction.values[0].split(',')
-                    console.log(splitValue)
 
                     profileData = await profileModel.findOne({userID: splitValue[1] });
 
@@ -123,7 +123,7 @@ module.exports = {
                         }
                     })
                     user = interaction.client.users.cache.find(user => user.id === splitValue[1])
-                    embed = new DiscordJS.MessageEmbed()
+                    embed = new Discord.MessageEmbed()
                     .setDescription(`**${interaction.member.user.username}** has removed the **${splitValue[0]}** title from **${user.username}**`)
                     .setColor("BLUE")
 
@@ -141,7 +141,7 @@ module.exports = {
                             storedTitles: newDTitles,
                         }
                     })
-                    embed = new DiscordJS.MessageEmbed()
+                    embed = new Discord.MessageEmbed()
                     .setDescription(`**${interaction.user.username}** has removed the **${interaction.values[0]}** title from the database`)
                     .setColor("BLUE")
 
@@ -162,9 +162,10 @@ module.exports = {
                         }
                     })
                     user = interaction.client.users.cache.find(user => user.id === splitValue[1])
-                    embed = new DiscordJS.MessageEmbed()
+                    embed = new Discord.MessageEmbed()
                     .setDescription(`**${interaction.member.user.username}** has given the **${splitValue[0]}** title to **${user.username}**`)
                     .setColor("BLUE")
+
 
                     interaction.update({embeds: [embed], components: []})
                 break;
@@ -191,21 +192,55 @@ module.exports = {
                 ]
                 
 
-                embed = new DiscordJS.MessageEmbed()
+                embed = new Discord.MessageEmbed()
                 .setDescription(`Choose an action`)
                 .setColor("RED")
                 
-                row = new DiscordJS.MessageActionRow()
+                row = new Discord.MessageActionRow()
                 .addComponents(
-                new DiscordJS.MessageSelectMenu()
+                new Discord.MessageSelectMenu()
                     .setCustomId('ConfigActionEditMenu')
                     .setPlaceholder('Choose Action')
                     .setMaxValues(1)
                     .addOptions(ActionList)
                 )
-                interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                buttonRow = new Discord.MessageActionRow()
+                .addComponents(
+                new Discord.MessageButton()
+                    .setCustomId('chooseActionBack')
+                    .setLabel('Back')
+                    .setStyle('DANGER')
+                )
+                interaction.update({embeds: [embed], components: [row, buttonRow], ephemeral: true})
                 break;
 
+                case 'chooseActionBack':
+                    const configFiles = fs.readdirSync('./configs').filter(file => file.endsWith('.txt'));
+
+                    let fileList = []
+        
+                        configFiles.forEach(file =>{
+                            fileList.push({
+                                label: file,
+                                value: file,
+                                description: `Edit the ${file} file`,                        
+                            })
+                        })
+        
+                        embed = new Discord.MessageEmbed()
+                        .setDescription(`Choose a file to edit`)
+                        .setColor("GREEN")
+                        
+                        row = new Discord.MessageActionRow()
+                        .addComponents(
+                        new Discord.MessageSelectMenu()
+                            .setCustomId('ConfigEditMenu')
+                            .setPlaceholder('Choose file')
+                            .setMaxValues(1)
+                            .addOptions(fileList)
+                        )
+                        interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                break;
 
                 case 'ConfigActionEditMenu':
                     splitValue = interaction.values[0].split(',')
@@ -223,19 +258,26 @@ module.exports = {
                                     description: `Remove the ${roleName} role`,
                                 })
                             })  
-                            embed = new DiscordJS.MessageEmbed()
+                            embed = new Discord.MessageEmbed()
                             .setDescription(`Choose a role to remove from the config file`)
                             .setColor("YELLOW")
                             
-                            row = new DiscordJS.MessageActionRow()
+                            row = new Discord.MessageActionRow()
                             .addComponents(
-                            new DiscordJS.MessageSelectMenu()
+                            new Discord.MessageSelectMenu()
                                 .setCustomId('ConfigRemoveMenu')
                                 .setPlaceholder('Choose a role')
                                 .setMaxValues(1)
                                 .addOptions(RoleList)
                             )
-                            interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                            buttonRow = new Discord.MessageActionRow()
+                                .addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId('configCancel')
+                                    .setLabel('Cancel')
+                                    .setStyle('DANGER')
+                                )
+                            interaction.update({embeds: [embed], components: [row, buttonRow], ephemeral: true})
 
                         break;
 
@@ -252,27 +294,33 @@ module.exports = {
                                     description: `Add the ${role.name} role`,
                                 })
                             })  
-                            embed = new DiscordJS.MessageEmbed()
+                            embed = new Discord.MessageEmbed()
                             .setDescription(`Choose a role to add to the config file`)
                             .setColor("YELLOW")
                             
-                            row = new DiscordJS.MessageActionRow()
+                            row = new Discord.MessageActionRow()
                             .addComponents(
-                            new DiscordJS.MessageSelectMenu()
+                            new Discord.MessageSelectMenu()
                                 .setCustomId('ConfigAddMenu')
                                 .setPlaceholder('Choose a role')
                                 .setMaxValues(1)
                                 .addOptions(ServerRoleList)
                             )
-                            interaction.update({embeds: [embed], components: [row], ephemeral: true})
+                            buttonRow = new Discord.MessageActionRow()
+                            .addComponents(
+                            new Discord.MessageButton()
+                                .setCustomId('configCancel')
+                                .setLabel('Cancel')
+                                .setStyle('DANGER')
+                            )
+                            interaction.update({embeds: [embed], components: [row, buttonRow], ephemeral: true})
                         break;
 
                         case 'list':
                             fileString = fs.readFileSync(`./configs/${splitValue[1]}`, {encoding:'utf8', flag:'r'})
                             fileArray = JSON.parse(fileString)
-                            console.log(fileArray.length)
                             if (fileArray.length === 0){
-                                embed = new DiscordJS.MessageEmbed()
+                                embed = new Discord.MessageEmbed()
                                     .setDescription(`The ${splitValue[1]} file contains no roles`)
                                     .setColor("YELLOW")
                                 return interaction.update({embeds: [embed], components: [], ephemeral: true})
@@ -284,13 +332,21 @@ module.exports = {
                                 roleNames.push(roleName)
                             })
                             roleNamesString = roleNames.join('\n')
-                            embed = new DiscordJS.MessageEmbed()
+                            embed = new Discord.MessageEmbed()
                             .setDescription(`The ${splitValue[1]} file contains the following roles \n\n${roleNamesString}`)
                             .setColor("YELLOW")
                             interaction.update({embeds: [embed], components: [], ephemeral: true})
                         }
                         break;
                     }
+                break;
+
+
+                case 'configCancel':
+                    embed = new Discord.MessageEmbed()
+                        .setDescription(`This command has been canceled`)
+                        .setColor("RED")
+                    interaction.update({embeds: [embed], components: [], ephemeral: true})
                 break;
 
 
@@ -312,12 +368,12 @@ module.exports = {
                         console.log(`wrote file ${splitValue[1]}`)
 
                         roleName = interaction.guild.roles.cache.get(splitValue[0]).name
-                        embed = new DiscordJS.MessageEmbed()
+                        embed = new Discord.MessageEmbed()
                             .setDescription(`The ${roleName} role has been removed from the ${splitValue[1]} file`)
                             .setColor("GREEN")
                             interaction.update({embeds: [embed], components: [], ephemeral: true})
                     } else{
-                        embed = new DiscordJS.MessageEmbed()
+                        embed = new Discord.MessageEmbed()
                             .setDescription(`Something went wrong. Please contact the bot developer`)
                             .setColor("RED")
                         interaction.update({embeds: [embed], components: [], ephemeral: true})
@@ -339,7 +395,7 @@ module.exports = {
 
 
                     roleName = interaction.guild.roles.cache.get(splitValue[0]).name
-                    embed = new DiscordJS.MessageEmbed()
+                    embed = new Discord.MessageEmbed()
                             .setDescription(`The ${roleName} role has been added to the ${splitValue[1]} file`)
                             .setColor("GREEN")
                             interaction.update({embeds: [embed], components: [], ephemeral: true})
