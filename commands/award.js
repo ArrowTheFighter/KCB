@@ -27,7 +27,7 @@ module.exports = {
         
         const cooldownTime = 86400000
         if(hasRole === false){
-            return interaction.reply({content: "You do not have the required role to use this command", ephemeral: true})
+            return interaction.reply({content: "❌ You do not have the required role to use this command ❌", ephemeral: true})
         }else{
 
             let userProfileData

@@ -15,6 +15,9 @@ module.exports = {
             let row
             let buttonRow
             let roleName
+            if(testValue === null){
+                var testValue
+            }
             switch (interaction.customId){
             case 'ColorMenu':
                     
@@ -335,7 +338,15 @@ module.exports = {
                             embed = new Discord.MessageEmbed()
                             .setDescription(`The ${splitValue[1]} file contains the following roles \n\n${roleNamesString}`)
                             .setColor("YELLOW")
-                            interaction.update({embeds: [embed], components: [], ephemeral: true})
+                            buttonRow = new Discord.MessageActionRow()
+                            .addComponents(
+                            new Discord.MessageButton()
+                                .setCustomId('configListBack')
+                                .setLabel('Back')
+                                .setStyle('DANGER')
+                                )
+                                testValue = splitValue[1]
+                            interaction.update({embeds: [embed], components: [buttonRow], ephemeral: true})
                         }
                         break;
                     }
@@ -346,6 +357,15 @@ module.exports = {
                     embed = new Discord.MessageEmbed()
                         .setDescription(`This command has been canceled`)
                         .setColor("RED")
+                    interaction.update({embeds: [embed], components: [], ephemeral: true})
+                break;
+
+                case 'configListBack':
+                    embed = new Discord.MessageEmbed()
+                        .setDescription('test')
+                        .setColor("RED")
+
+                        console.log(testValue)
                     interaction.update({embeds: [embed], components: [], ephemeral: true})
                 break;
 

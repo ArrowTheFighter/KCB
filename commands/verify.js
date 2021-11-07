@@ -1,6 +1,7 @@
 const profileModel = require('../models/profileSchema')
 const Discord = require('discord.js')
 const fs = require('fs')
+const myFuntions = require('../myFunctions')
 const { join } = require('path')
 require('dotenv').config()
 
@@ -20,7 +21,12 @@ module.exports = {
     
     
     callback: async ({ interaction }) => {
-        if(interaction.member.roles.cache.some(role => role.name === 'Mod')){
+        const configJson = fs.readFileSync('./configs/verifyConfig.txt', {encoding:'utf8', flag:'r'})
+        const configArray = JSON.parse(configJson)
+        let hasRole = myFuntions.CheckConfigRoles(interaction, configArray)
+        if(hasRole === false){
+            return interaction.reply({content: "❌ You do not have the required role to use this command ❌", ephemeral: true})
+        }else{
            
         let replyMessage = 'incorrect code'
         const passcode = interaction.options.getString('passcode')
@@ -54,9 +60,7 @@ module.exports = {
             //console.log(code + ' ' + passcode)
          });
          
-    return interaction.reply({content: replyMessage, ephemeral: true})
-    }else{
-        return interaction.reply({content: "You don't have permission to use this command", ephemeral: true})
-    }
+        return interaction.reply({content: replyMessage, ephemeral: true})
+        }
     }
   }

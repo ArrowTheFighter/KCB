@@ -1,6 +1,8 @@
 const profileModel = require('../models/profileSchema')
 const Discord = require('discord.js')
+const myFuntions = require('../myFunctions')
 require('dotenv').config()
+const fs = require('fs')
 
 module.exports = {
     category: 'Profile',
@@ -19,6 +21,15 @@ module.exports = {
     ],
 
     callback: async ({ interaction }) => {
+
+      const configJson = fs.readFileSync('./configs/profileConfig.txt', {encoding:'utf8', flag:'r'})
+        const configArray = JSON.parse(configJson)
+        let hasRole = myFuntions.CheckConfigRoles(interaction, configArray)
+        if(hasRole === false){
+            return interaction.reply({content: "❌ You do not have the required role to use this command ❌", ephemeral: true})
+        }else{
+
+
       const userToGetProfile = interaction.options.getUser('user')
       
       if (userToGetProfile === null){ //Checking your own profile
@@ -95,5 +106,6 @@ module.exports = {
     
     return embed
     }
+  }
   },
   }

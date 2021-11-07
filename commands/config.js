@@ -28,7 +28,7 @@ module.exports = {
         let hasPermission = myFuntions.CheckConfigRoles(interaction, configArray)
 
         if(!hasPermission){
-            return interaction.reply({content:`You don't have the required permission to use this command`, ephemeral: true})
+            return interaction.reply({content:`❌ You do not have the required role to use this command ❌`, ephemeral: true})
         }
 
         switch(action){

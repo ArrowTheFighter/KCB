@@ -102,7 +102,7 @@ module.exports = {
         let hasPermission = myFuntions.CheckConfigRoles(interaction, configArray)
 
         if(!hasPermission){
-        return interaction.reply({content: `You don't have permission to use this command`})
+        return interaction.reply({content: `❌ You do not have the required role to use this command ❌`})
         }
 
         const title = interaction.options.getString('title')

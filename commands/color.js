@@ -1,7 +1,9 @@
 
 const profileModel = require('../models/profileSchema');
 const Discord = require('discord.js')
+const myFuntions = require('../myFunctions')
 require('dotenv').config();
+const fs = require('fs')
 
 
 module.exports = {
@@ -15,6 +17,12 @@ module.exports = {
 
     callback: async ({ interaction, client }) => {
         
+        const configJson = fs.readFileSync('./configs/colorConfig.txt', {encoding:'utf8', flag:'r'})
+        const configArray = JSON.parse(configJson)
+        let hasRole = myFuntions.CheckConfigRoles(interaction, configArray)
+        if(hasRole === false){
+            return interaction.reply({content: "❌ You do not have the required role to use this command ❌", ephemeral: true})
+        }else{
         let profileData;
             
             profileData = await profileModel.findOne({userID: interaction.member?.user.id });
@@ -165,6 +173,6 @@ module.exports = {
         
         
 
-        
         }
+    }
 }
